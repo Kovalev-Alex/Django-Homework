@@ -28,3 +28,14 @@ DATA = {
 #     'ингредиент2': количество2,
 #   }
 # }
+
+
+def recipe(request, res):
+    servings = int(request.GET.get('servings'))
+    raw_dict = DATA.get(res)
+    raw_dict.update((key, value * servings) for key, value in raw_dict.items())
+    context = {
+        'recipe': DATA.get(res)
+    }
+    servings = 1
+    return render(request, 'calculator/index.html', context)
