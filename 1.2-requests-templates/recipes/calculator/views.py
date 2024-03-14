@@ -1,3 +1,5 @@
+import copy
+
 from django.shortcuts import render
 
 DATA = {
@@ -31,11 +33,10 @@ DATA = {
 
 
 def recipe(request, res):
-    servings = int(request.GET.get('servings'))
-    raw_dict = DATA.get(res)
-    raw_dict.update((key, value * servings) for key, value in raw_dict.items())
+    servings = int(request.GET.get('servings', 1))
+    new_dict = copy.deepcopy(DATA.get(res))
+    new_dict.update((key, round(value * servings, 1)) for key, value in new_dict.items())
     context = {
-        'recipe': DATA.get(res)
+        'recipe': new_dict
     }
-    servings = 1
     return render(request, 'calculator/index.html', context)
