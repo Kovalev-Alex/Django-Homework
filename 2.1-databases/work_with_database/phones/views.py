@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from phones.models import Phone
 
@@ -6,28 +7,26 @@ def index(request):
 
 def show_catalog(request):
     template = 'catalog.html'
-    phone_object = Phone.objects.all()
-    phone_name = (p.name for p in phone_object)
-    phone_price = (p.price for p in phone_object)
-    phone_image = (p.image for p in phone_object)
-    
+    sort_item = request.GET.get('sort', 'name')
+    if sort_item == 'min_price':
+        sort = 'price'
+    elif sort_item == 'max_price':
+        sort ='-price'
+    else:
+        sort = 'name'
+    phone_object = Phone.objects.order_by(sort)
     
     context = {
-        'phones': {
-            'name': phone_name,
-            'price': phone_price,
-            'image': phone_image
-
+            'phones': phone_object,
         }
-    }
-    
     return render(request, template, context)
 
 
 def show_product(request, slug):
     template = 'product.html'
+    phone_object = Phone.objects.all()
     context = {
-
+            'phone': phone_object.filter(slug=slug).first(),
     }
     return render(request, template, context)
  
